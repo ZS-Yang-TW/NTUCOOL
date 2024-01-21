@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { UpdateUserDto, CreateUserDto, QueryUserDto } from './user.dto';
 import { UsersService } from './users.service';
+import { CoursesService } from 'src/courses/courses.service';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
@@ -10,7 +11,7 @@ export class UsersController {
 
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    const { email } = createUserDto;
+    let { email } = createUserDto;
     if (!this.isEmailValid(email)) {
       throw new BadRequestException('Invalid email format.');
     }
@@ -24,7 +25,7 @@ export class UsersController {
 
   @Get(':id')
   async getUserById(@Param('id', ParseIntPipe) id: number) {
-    const user = this.usersService.findUserById(id);
+    let user = this.usersService.findUserById(id);
     if (!user) {
       throw new BadRequestException('User not found.');
     }
@@ -33,7 +34,7 @@ export class UsersController {
 
   @Get()
   async queryUsers(@Query() query: QueryUserDto) {
-    const { email, name } = query;
+    let { email, name } = query;
 
     if (email && !this.isEmailValid(email)) {
       throw new BadRequestException('Invalid email format.');
@@ -44,8 +45,8 @@ export class UsersController {
 
   @Put(':id')
   async updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-    const user = this.usersService.findUserById(id);
-    const { email } = updateUserDto;
+    let user = this.usersService.findUserById(id);
+    let { email } = updateUserDto;
 
     if (!user) {
       throw new BadRequestException('User not found.');
@@ -60,7 +61,7 @@ export class UsersController {
 
   @Delete(':id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
-    const user = this.usersService.findUserById(id);
+    let user = this.usersService.findUserById(id);
     if (!user) {
       throw new BadRequestException('User not found.');
     }
@@ -68,9 +69,21 @@ export class UsersController {
     return this.usersService.deleteUser(id);
   }
 
+  //users/{userId}/courses
+  @Get(':id/courses')
+  async getCoursesByUserId(@Param('id', ParseIntPipe) id: number) {
+    let user = this.usersService.findUserById(id);
+    if (!user) {
+      throw new BadRequestException('User not found.');
+    }
+    return new CoursesService().findCoursesByUserId(id);
+  }
+
+
+  
   // Email Validation
   private isEmailValid(email: string): boolean {
-    var re = /^\S+@\S+\.\S+$/;
+    let re = /^\S+@\S+\.\S+$/;
     return re.test(email);
   }
 }

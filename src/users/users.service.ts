@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { UpdateUserDto, CreateUserDto} from './user.dto';
+import { EnrollmentsService } from 'src/enrollments/enrollments.service';
 import * as fs from 'fs';
 
 @Injectable()
@@ -16,7 +17,7 @@ export class UsersService {
 
   // API Logic
   createUser(createUserDto: CreateUserDto): User {
-    const user = new User();
+    let user = new User();
     user.id = this.idCounter++;
     user.name = createUserDto.name;
     user.email = createUserDto.email;
@@ -40,7 +41,7 @@ export class UsersService {
   }
 
   updateUser(id: number, updateUserDto: UpdateUserDto): User | undefined {
-    const user = this.findUserById(Number(id));
+    let user = this.findUserById(Number(id));
     user.name = updateUserDto.name || user.name;
     user.email = updateUserDto.email || user.email;
     
@@ -49,8 +50,8 @@ export class UsersService {
   }
 
   deleteUser(id: number): User {
-    const index = this.users.findIndex(user => user.id === id);
-    const user = this.users.splice(index, 1)[0];
+    let index = this.users.findIndex(user => user.id === id);
+    let user = this.users.splice(index, 1)[0];
     this.saveUsers();
 
     return user;
@@ -58,8 +59,14 @@ export class UsersService {
   
   // Find User by ID
   findUserById(id: number): User {
-    const user = this.users.find(user => user.id === id);
+    let user = this.users.find(user => user.id === id);
     return user;
+  }
+
+  findUsersByCourseId(courseId: number): User[] {
+    let enrollments = new EnrollmentsService().findEnrollmentsByCourseId(courseId);
+    let users = enrollments.map(enrollment => enrollment.user);
+    return users
   }
 
   // Email Existence Check
@@ -74,7 +81,7 @@ export class UsersService {
 
   private loadUsers(): void {
     if (fs.existsSync(this.dataFile)) {
-      const data = fs.readFileSync(this.dataFile, 'utf8');
+      let data = fs.readFileSync(this.dataFile, 'utf8');
       this.users = JSON.parse(data);
       if (this.users.length > 0) {
         this.idCounter = Math.max(...this.users.map(u => u.id)) + 1;

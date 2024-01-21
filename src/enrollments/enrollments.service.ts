@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Enrollment } from './enrollment.entity';
-import { User } from '../users/user.entity';
+import { User } from 'src/users/user.entity';
 import { CreateEnrollmentsDto } from './enrollments.dto';
-import { CoursesService } from '../courses/courses.service';
-import { UsersService } from '../users/users.service';
+import { CoursesService } from 'src/courses/courses.service';
+import { UsersService } from 'src/users/users.service';
 import * as fs from 'fs';
 
 
@@ -20,7 +20,7 @@ export class EnrollmentsService {
 
     // API Logic
     createEnrollment(enrollment: CreateEnrollmentsDto): Enrollment {
-        const newEnrollment = {
+        let newEnrollment = {
             id: this.idCounter++,
             user: new UsersService().findUserById(enrollment.user),
             course: new CoursesService().findCourseById(enrollment.course),
@@ -31,11 +31,41 @@ export class EnrollmentsService {
         return newEnrollment;
     }
 
-    // findUsersByCourseId(courseId: number): User[] {
-    //     return this.enrollments
-    //       .filter(enrollment => enrollment.course.id === courseId)
-    //       .map(enrollment => enrollment.user);
-    // }
+    queryEnrollments(user?: number, role?: string): Enrollment[] {
+        return this.enrollments.filter(enrollment => {
+            if (user && enrollment.user.id !== user) {
+                return false;
+            }
+
+            if (role && enrollment.role !== role) {
+                return false; 
+            }
+
+            return true;
+        });
+    }
+
+    deleteEnrollment(id: number): Enrollment {
+        let index = this.enrollments.findIndex(enrollment => enrollment.id === id);
+        let enrollment = this.enrollments.splice(index, 1)[0];
+        this.saveEnrollments();
+
+        return enrollment;
+    }
+
+    findEnrollmentById(id: number): Enrollment {
+        let enrollment = this.enrollments.find(enrollment => enrollment.id === id);
+        return enrollment
+    }
+
+    findEnrollmentsByUserId(userId: number): Enrollment[] {
+        return this.enrollments.filter(enrollment => enrollment.user.id === userId);
+    }
+
+    findEnrollmentsByCourseId(courseId: number): Enrollment[] {
+        return this.enrollments.filter(enrollment => enrollment.course.id === courseId);
+    }
+
 
     // DB Save & Load
     private saveEnrollments(): void {
@@ -44,7 +74,7 @@ export class EnrollmentsService {
 
     private loadEnrollments(): void {
         if (fs.existsSync(this.dataFile)) {
-        const data = fs.readFileSync(this.dataFile, 'utf8');
+        let data = fs.readFileSync(this.dataFile, 'utf8');
         this.enrollments = JSON.parse(data);
         if (this.enrollments.length > 0) {
             this.idCounter = Math.max(...this.enrollments.map(u => u.id)) + 1;
