@@ -1,0 +1,1 @@
+[{"id":1,"user":{"id":2,"name":"Steven","email":"msycomtw@gmail.com"},"course":{"id":1,"name":"Software engineering 101"},"role":"student"},{"id":2,"user":{"id":2,"name":"Steven","email":"msycomtw@gmail.com"},"course":{"id":1,"name":"Software engineering 101"},"role":"student"}]

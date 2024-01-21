@@ -24,7 +24,7 @@ export class UsersController {
 
   @Get(':id')
   async getUserById(@Param('id', ParseIntPipe) id: number) {
-    const user = this.usersService.findById(id);
+    const user = this.usersService.findUserById(id);
     if (!user) {
       throw new BadRequestException('User not found.');
     }
@@ -44,7 +44,7 @@ export class UsersController {
 
   @Put(':id')
   async updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-    const user = this.usersService.findById(id);
+    const user = this.usersService.findUserById(id);
     const { email } = updateUserDto;
 
     if (!user) {
@@ -60,7 +60,7 @@ export class UsersController {
 
   @Delete(':id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
-    const user = this.usersService.findById(id);
+    const user = this.usersService.findUserById(id);
     if (!user) {
       throw new BadRequestException('User not found.');
     }

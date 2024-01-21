@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto, CreateUserDto} from './user.dto';
 import * as fs from 'fs';
 
 @Injectable()
@@ -10,10 +9,12 @@ export class UsersService {
   private idCounter = 1;
   private readonly dataFile = 'users.json';
 
+  // Initialize the service by loading the users from the DB
   constructor() {
     this.loadUsers();
   }
 
+  // API Logic
   createUser(createUserDto: CreateUserDto): User {
     const user = new User();
     user.id = this.idCounter++;
@@ -39,7 +40,7 @@ export class UsersService {
   }
 
   updateUser(id: number, updateUserDto: UpdateUserDto): User | undefined {
-    const user = this.findById(Number(id));
+    const user = this.findUserById(Number(id));
     user.name = updateUserDto.name || user.name;
     user.email = updateUserDto.email || user.email;
     
@@ -47,7 +48,7 @@ export class UsersService {
     return user;
   }
 
-  deleteUser(id: number): User | undefined {
+  deleteUser(id: number): User {
     const index = this.users.findIndex(user => user.id === id);
     const user = this.users.splice(index, 1)[0];
     this.saveUsers();
@@ -56,10 +57,8 @@ export class UsersService {
   }
   
   // Find User by ID
-  findById(id: number): User | undefined {
+  findUserById(id: number): User {
     const user = this.users.find(user => user.id === id);
-    this.saveUsers();
-
     return user;
   }
 
