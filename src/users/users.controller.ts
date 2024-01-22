@@ -7,10 +7,13 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly courseService: CoursesService,
+    ) {}
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto) {
+  createUser(@Body() createUserDto: CreateUserDto) {
     let { email } = createUserDto;
     if (!this.isEmailValid(email)) {
       throw new BadRequestException('Invalid email format.');
@@ -24,7 +27,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  async getUserById(@Param('id', ParseIntPipe) id: number) {
+  getUserById(@Param('id', ParseIntPipe) id: number) {
     let user = this.usersService.findUserById(id);
     if (!user) {
       throw new BadRequestException('User not found.');
@@ -33,7 +36,7 @@ export class UsersController {
   }
 
   @Get()
-  async queryUsers(@Query() query: QueryUserDto) {
+  queryUsers(@Query() query: QueryUserDto) {
     let { email, name } = query;
 
     if (email && !this.isEmailValid(email)) {
@@ -44,7 +47,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  async updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
+  updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
     let user = this.usersService.findUserById(id);
     let { email } = updateUserDto;
 
@@ -60,7 +63,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
     let user = this.usersService.findUserById(id);
     if (!user) {
       throw new BadRequestException('User not found.');
@@ -71,15 +74,13 @@ export class UsersController {
 
   //users/{userId}/courses
   @Get(':id/courses')
-  async getCoursesByUserId(@Param('id', ParseIntPipe) id: number) {
+  getCoursesByUserId(@Param('id', ParseIntPipe) id: number) {
     let user = this.usersService.findUserById(id);
     if (!user) {
       throw new BadRequestException('User not found.');
     }
-    return new CoursesService().findCoursesByUserId(id);
+    return this.courseService.findCoursesByUserId(id);
   }
-
-
   
   // Email Validation
   private isEmailValid(email: string): boolean {

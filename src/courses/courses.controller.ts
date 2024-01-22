@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe } from '@nestjs/common';
-import { CoursesService } from './courses.service';
-import { EnrollmentsService } from 'src/enrollments/enrollments.service';
-import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/user.entity';
+import { Course } from './course.entity';
+import { CoursesService } from './courses.service';
+import { UsersService } from 'src/users/users.service';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Courses')
@@ -10,11 +10,11 @@ import { ApiTags } from '@nestjs/swagger';
 export class CoursesController {
     constructor(
         private readonly courseService: CoursesService,
-        private readonly enrollmentService: EnrollmentsService,
+        private readonly userService: UsersService,
     ) {}
 
     @Get(':id')
-    async getCourseById(@Param('id', ParseIntPipe) id: number) {
+    getCourseById(@Param('id', ParseIntPipe) id: number) : Course {
         let course = this.courseService.findCourseById(id);
         if (!course) {
         throw new BadRequestException('Course not found.');
@@ -30,8 +30,6 @@ export class CoursesController {
             throw new BadRequestException('Course not found.');
         }
 
-        return new UsersService().findUsersByCourseId(id);
+        return this.userService.findUsersByCourseId(id);
     }
-
-
 }

@@ -15,7 +15,7 @@ export class UsersService {
     this.loadUsers();
   }
 
-  // API Logic
+  // CRUD Logic
   createUser(createUserDto: CreateUserDto): User {
     let user = new User();
     user.id = this.idCounter++;
@@ -40,7 +40,7 @@ export class UsersService {
     });
   }
 
-  updateUser(id: number, updateUserDto: UpdateUserDto): User | undefined {
+  updateUser(id: number, updateUserDto: UpdateUserDto): User {
     let user = this.findUserById(Number(id));
     user.name = updateUserDto.name || user.name;
     user.email = updateUserDto.email || user.email;
@@ -57,7 +57,7 @@ export class UsersService {
     return user;
   }
   
-  // Find User by ID
+  // Inner Logic
   findUserById(id: number): User {
     let user = this.users.find(user => user.id === id);
     return user;
@@ -65,7 +65,8 @@ export class UsersService {
 
   findUsersByCourseId(courseId: number): User[] {
     let enrollments = new EnrollmentsService().findEnrollmentsByCourseId(courseId);
-    let users = enrollments.map(enrollment => enrollment.user);
+    let userIds = enrollments.map(enrollment => enrollment.userId);
+    let users = this.users.filter(user => userIds.includes(user.id));
     return users
   }
 

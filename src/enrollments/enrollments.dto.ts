@@ -8,7 +8,7 @@ export class CreateEnrollmentsDto {
     course: number;
 
     @ApiProperty({ example: 'student' })
-    role: string;
+    role: 'student' | 'teacher';
 }
 
 export class QueryEnrollmentsBycourseIdDto {
@@ -16,7 +16,7 @@ export class QueryEnrollmentsBycourseIdDto {
     user: number;
 
     @ApiProperty({ required: false })
-    role: string;
+    role: 'student' | 'teacher';
 }
 
 export class QueryEnrollmentsByUserIdDto {
@@ -24,5 +24,5 @@ export class QueryEnrollmentsByUserIdDto {
     course: number;
 
     @ApiProperty({ required: false })
-    role: string;
+    role: 'student' | 'teacher';
 }

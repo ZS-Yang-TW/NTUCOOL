@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Enrollment } from './enrollment.entity';
-import { User } from 'src/users/user.entity';
 import { CreateEnrollmentsDto } from './enrollments.dto';
-import { CoursesService } from 'src/courses/courses.service';
-import { UsersService } from 'src/users/users.service';
 import * as fs from 'fs';
 
 
@@ -18,31 +15,17 @@ export class EnrollmentsService {
         this.loadEnrollments();
     }
 
-    // API Logic
+    // CRUD Logic
     createEnrollment(enrollment: CreateEnrollmentsDto): Enrollment {
         let newEnrollment = {
             id: this.idCounter++,
-            user: new UsersService().findUserById(enrollment.user),
-            course: new CoursesService().findCourseById(enrollment.course),
+            userId: enrollment.user,
+            courseId: enrollment.course,
             role: enrollment.role,
         };
         this.enrollments.push(newEnrollment);
         this.saveEnrollments();
         return newEnrollment;
-    }
-
-    queryEnrollments(user?: number, role?: string): Enrollment[] {
-        return this.enrollments.filter(enrollment => {
-            if (user && enrollment.user.id !== user) {
-                return false;
-            }
-
-            if (role && enrollment.role !== role) {
-                return false; 
-            }
-
-            return true;
-        });
     }
 
     deleteEnrollment(id: number): Enrollment {
@@ -53,17 +36,18 @@ export class EnrollmentsService {
         return enrollment;
     }
 
+    // Inner Logic
     findEnrollmentById(id: number): Enrollment {
         let enrollment = this.enrollments.find(enrollment => enrollment.id === id);
         return enrollment
     }
 
     findEnrollmentsByUserId(userId: number): Enrollment[] {
-        return this.enrollments.filter(enrollment => enrollment.user.id === userId);
+        return this.enrollments.filter(enrollment => enrollment.userId === userId);
     }
 
     findEnrollmentsByCourseId(courseId: number): Enrollment[] {
-        return this.enrollments.filter(enrollment => enrollment.course.id === courseId);
+        return this.enrollments.filter(enrollment => enrollment.courseId === courseId);
     }
 
 

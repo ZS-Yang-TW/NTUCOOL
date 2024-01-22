@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Course } from './course.entity';
-import { User } from 'src/users/user.entity';
-import { UsersService } from 'src/users/users.service';
 import { EnrollmentsService } from 'src/enrollments/enrollments.service';
 import * as fs from 'fs';
 
@@ -17,7 +15,7 @@ export class CoursesService {
         this.loadCourses();
     }
 
-    // API Logic
+    // Inner Logic
     findCourseById(id: number): Course{
         let course = this.courses.find(course => course.id === id);
         return course
@@ -25,7 +23,8 @@ export class CoursesService {
     
     findCoursesByUserId(userId: number): Course[] {
         let enrollments = new EnrollmentsService().findEnrollmentsByUserId(userId);
-        let courses = enrollments.map(enrollment => enrollment.course);
+        let courseIds = enrollments.map(enrollment => enrollment.courseId);
+        let courses = this.courses.filter(course => courseIds.includes(course.id));
         return courses
     }
 

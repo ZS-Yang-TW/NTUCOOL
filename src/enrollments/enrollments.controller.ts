@@ -1,10 +1,12 @@
 import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Enrollment } from './enrollment.entity';
+import { CreateEnrollmentsDto, QueryEnrollmentsByUserIdDto, QueryEnrollmentsBycourseIdDto } from './enrollments.dto';
 import { CoursesService } from 'src/courses/courses.service';
 import { EnrollmentsService } from './enrollments.service';
 import { UsersService } from 'src/users/users.service';
-import { CreateEnrollmentsDto, QueryEnrollmentsByUserIdDto, QueryEnrollmentsBycourseIdDto } from './enrollments.dto';
+
 import { ApiTags } from '@nestjs/swagger';
-import { Enrollment } from './enrollment.entity';
+
 
 @ApiTags('Enrollments')
 @Controller('enrollments')
@@ -12,12 +14,14 @@ export class EnrollmentsController {
     constructor(
         private readonly courseService: CoursesService,
         private readonly enrollmentService: EnrollmentsService,
+        private readonly userService: UsersService,
+        
     ) {}
 
     @Post()
-    async createEnrollment(@Body() enrollment: CreateEnrollmentsDto) {
+    createEnrollment(@Body() enrollment: CreateEnrollmentsDto) : Enrollment {
         let course = this.courseService.findCourseById(enrollment.course);
-        let user = new UsersService().findUserById(enrollment.user);
+        let user = this.userService.findUserById(enrollment.user);
 
         if (!user) {
             throw new BadRequestException('User not found.');
@@ -32,12 +36,17 @@ export class EnrollmentsController {
         }
 
         // Situation: User has already enrolled in the course
+        let enrolledUsers = this.userService.findUsersByCourseId(enrollment.course);
+
+        if (enrolledUsers.some(enrolledUser => enrolledUser.id === user.id)) {
+            throw new BadRequestException('User has already enrolled in the course');
+        }
 
         return this.enrollmentService.createEnrollment(enrollment);
     }
 
     @Get(':id')
-    async getEnrollmentById(@Param('id', ParseIntPipe) id: number) {
+    getEnrollmentById(@Param('id', ParseIntPipe) id: number) : Enrollment {
         let enrollment = this.enrollmentService.findEnrollmentById(id);
         if (!enrollment) {
         throw new BadRequestException('Enrollment not found.');
@@ -45,11 +54,20 @@ export class EnrollmentsController {
         return enrollment;
     }
 
+    @Delete(':id')
+    deleteEnrollment(@Param('id', ParseIntPipe) id: number) : Enrollment {
+        let enrollment = this.enrollmentService.findEnrollmentById(id);
+        if (!enrollment) {
+            throw new BadRequestException('Enrollment not found.');
+        }
+
+        return this.enrollmentService.deleteEnrollment(id);
+    }
+    
     //enrollments/course/{courseId}/?user=1&role=student
     @Get('course/:id')
-    queryEnrollmentsByCourseId(@Param('id', ParseIntPipe) id: number, @Query() query: QueryEnrollmentsBycourseIdDto) {
+    queryEnrollmentsByCourseId(@Param('id', ParseIntPipe) id: number, @Query() query: QueryEnrollmentsBycourseIdDto) : Enrollment[] {
         let { user, role } = query;
-
         let course = this.courseService.findCourseById(id);
 
         if (!course) {
@@ -67,7 +85,7 @@ export class EnrollmentsController {
         let enrollments = this.enrollmentService.findEnrollmentsByCourseId(id);
         
         return enrollments.filter(enrollment => {
-            if (user && enrollment.user.id !== Number(user)) {
+            if (user && enrollment.userId !== Number(user)) {
                 return false;
             }
 
@@ -81,7 +99,7 @@ export class EnrollmentsController {
 
     //enrollments/users/{userId}/?course=1&role=student
     @Get('users/:id')
-    queryEnrollmentsByUserId(@Param('id', ParseIntPipe) id: number, @Query() query: QueryEnrollmentsByUserIdDto) {
+    queryEnrollmentsByUserId(@Param('id', ParseIntPipe) id: number, @Query() query: QueryEnrollmentsByUserIdDto) : Enrollment[] {
         let { course, role } = query;
 
         let user = new UsersService().findUserById(id);
@@ -101,7 +119,7 @@ export class EnrollmentsController {
         let enrollments = this.enrollmentService.findEnrollmentsByUserId(id);
         
         return enrollments.filter(enrollment => {
-            if (course && enrollment.course.id !== Number(course)) {
+            if (course && enrollment.courseId !== Number(course)) {
                 return false;
             }
 
@@ -111,15 +129,5 @@ export class EnrollmentsController {
 
             return true;
         });
-    }
-
-    @Delete(':id')
-    async deleteEnrollment(@Param('id', ParseIntPipe) id: number) {
-        let enrollment = this.enrollmentService.findEnrollmentById(id);
-        if (!enrollment) {
-            throw new BadRequestException('Enrollment not found.');
-        }
-
-        return this.enrollmentService.deleteEnrollment(id);
     }
 }
