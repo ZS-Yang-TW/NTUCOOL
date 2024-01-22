@@ -7,7 +7,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('NTUCOOL API Docs')
+    // .setDescription('用來測試 NTUCOOL API 的文件')
     .setVersion('1.0')
+    .addBearerAuth() // 啟用 Bearer token 設定
     .build();
   
   const document = SwaggerModule.createDocument(app, config);

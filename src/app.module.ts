@@ -7,9 +7,10 @@ import { CoursesController } from './courses/courses.controller';
 import { CoursesService } from './courses/courses.service';
 import { EnrollmentsController } from './enrollments/enrollments.controller';
 import { EnrollmentsService } from './enrollments/enrollments.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [],
+  imports: [AuthModule],
   controllers: [AppController, UsersController, CoursesController, EnrollmentsController],
   providers: [AppService, UsersService, CoursesService, EnrollmentsService],
 })

@@ -75,6 +75,11 @@ export class UsersService {
     return this.users.some(user => user.email === email);
   }
 
+  //login(test)
+  findOne(name: string): User {
+    return this.users.find(user => user.name === name);
+  }
+
   // DB Save & Load
   private saveUsers(): void {
     fs.writeFileSync(this.dataFile, JSON.stringify(this.users));

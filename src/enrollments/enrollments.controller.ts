@@ -1,13 +1,16 @@
-import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Enrollment } from './enrollment.entity';
 import { CreateEnrollmentsDto, QueryEnrollmentsByUserIdDto, QueryEnrollmentsBycourseIdDto } from './enrollments.dto';
 import { CoursesService } from 'src/courses/courses.service';
 import { EnrollmentsService } from './enrollments.service';
 import { UsersService } from 'src/users/users.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 
+@ApiBearerAuth()
 @ApiTags('Enrollments')
 @Controller('enrollments')
 export class EnrollmentsController {
@@ -18,6 +21,7 @@ export class EnrollmentsController {
         
     ) {}
 
+    @UseGuards(AuthGuard)
     @Post()
     createEnrollment(@Body() enrollment: CreateEnrollmentsDto) : Enrollment {
         let course = this.courseService.findCourseById(enrollment.course);
@@ -54,6 +58,7 @@ export class EnrollmentsController {
         return enrollment;
     }
 
+    @UseGuards(AuthGuard)
     @Delete(':id')
     deleteEnrollment(@Param('id', ParseIntPipe) id: number) : Enrollment {
         let enrollment = this.enrollmentService.findEnrollmentById(id);

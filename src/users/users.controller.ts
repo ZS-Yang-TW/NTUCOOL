@@ -1,9 +1,12 @@
-import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { UpdateUserDto, CreateUserDto, QueryUserDto } from './user.dto';
 import { UsersService } from './users.service';
 import { CoursesService } from 'src/courses/courses.service';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
@@ -12,6 +15,7 @@ export class UsersController {
     private readonly courseService: CoursesService,
     ) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   createUser(@Body() createUserDto: CreateUserDto) {
     let { email } = createUserDto;
@@ -46,6 +50,7 @@ export class UsersController {
     return this.usersService.queryUsers(email, name);
   }
 
+  @UseGuards(AuthGuard)
   @Put(':id')
   updateUser(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
     let user = this.usersService.findUserById(id);
@@ -62,6 +67,7 @@ export class UsersController {
     return this.usersService.updateUser(id, updateUserDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     let user = this.usersService.findUserById(id);
