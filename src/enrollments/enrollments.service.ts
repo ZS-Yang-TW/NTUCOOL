@@ -8,7 +8,7 @@ import * as fs from 'fs';
 export class EnrollmentsService {
     private enrollments: Enrollment[] = [];
     private idCounter = 1;
-    private readonly dataFile = 'src/data/enrollments.json'
+    private readonly dataFile = 'data/enrollments.json'
 
     // Initialize the service by loading the enrollments from the DB
     constructor() {

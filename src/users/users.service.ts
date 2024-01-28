@@ -8,7 +8,7 @@ import * as fs from 'fs';
 export class UsersService {
   private users: User[] = [];
   private idCounter = 1;
-  private readonly dataFile = 'src/data/users.json'
+  private readonly dataFile = 'data/users.json'
 
   // Initialize the service by loading the users from the DB
   constructor() {
