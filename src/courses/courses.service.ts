@@ -8,7 +8,7 @@ import * as fs from 'fs';
 export class CoursesService {
     private courses: Course[] = [];
     private idCounter = 1;
-    private readonly dataFile = 'courses.json';
+    private readonly dataFile = 'src/data/courses.json'
 
     // Initialize the service by loading the courses from the DB
     constructor() {

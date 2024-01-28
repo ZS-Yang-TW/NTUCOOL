@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { User } from 'src/users/user.entity';
 import { Course } from './course.entity';
 import { CoursesService } from './courses.service';
