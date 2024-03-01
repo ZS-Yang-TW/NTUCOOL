@@ -2,7 +2,7 @@ import { Get, Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } fro
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
-import { CreateUserDto } from 'src/users/user.dto';
+import { CreateUserDto } from '../users/user.dto';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()

@@ -1,8 +1,8 @@
 import { Controller, Get, Param, BadRequestException, ParseIntPipe } from '@nestjs/common';
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 import { Course } from './course.entity';
 import { CoursesService } from './courses.service';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Courses')

@@ -1,10 +1,10 @@
 import { Controller, Post, Get, Delete, Body, Param, Query, BadRequestException, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Enrollment } from './enrollment.entity';
 import { CreateEnrollmentsDto, QueryEnrollmentsByUserIdDto, QueryEnrollmentsBycourseIdDto } from './enrollments.dto';
-import { CoursesService } from 'src/courses/courses.service';
+import { CoursesService } from '../courses/courses.service';
 import { EnrollmentsService } from './enrollments.service';
-import { UsersService } from 'src/users/users.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { UsersService } from '../users/users.service';
+import { AuthGuard } from '../auth/auth.guard';
 
 import { ApiTags } from '@nestjs/swagger';
 import { ApiBearerAuth } from '@nestjs/swagger';

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Course } from './course.entity';
-import { EnrollmentsService } from 'src/enrollments/enrollments.service';
+import { EnrollmentsService } from '../enrollments/enrollments.service';
 import * as fs from 'fs';
 
 

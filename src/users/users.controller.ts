@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Put, Delete, Body, Param, Query, BadRequestException, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { UpdateUserDto, CreateUserDto, QueryUserDto } from './user.dto';
 import { UsersService } from './users.service';
-import { CoursesService } from 'src/courses/courses.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { CoursesService } from '../courses/courses.service';
+import { AuthGuard } from '../auth/auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 
